@@ -1,0 +1,42 @@
+version: '3.8'
+
+services:
+  # ---- MySQL Database ----
+  mysql:
+    image: mysql:8.0
+    container_name: mysql_supplychainx
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root       # mot de passe root
+      MYSQL_DATABASE: supplychainx_db   # crée uniquement la base de données
+      MYSQL_USER: mohsen
+      MYSQL_PASSWORD: mohsen123
+    ports:
+      - "3306:3306"                   # port local 3307 → conteneur 3306
+    volumes:
+      - mysql_data_supplychainx:/var/lib/mysql
+    networks:
+      - supplychainx-network
+
+  # ---- phpMyAdmin ----
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: phpmyadmin_supplychainx
+    restart: always
+    environment:
+      PMA_HOST: mysql
+      PMA_USER: mohsen
+      PMA_PASSWORD: mohsen123
+    ports:
+      - "8081:80"                      # accès via http://localhost:8081
+    depends_on:
+      - mysql
+    networks:
+      - supplychainx-network
+
+volumes:
+  mysql_data_supplychainx:
+
+networks:
+  supplychainx-network:
+    driver: bridge
