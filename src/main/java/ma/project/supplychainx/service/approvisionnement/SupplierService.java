@@ -8,6 +8,7 @@ import ma.project.supplychainx.repository.approvisionnement.ISupplierRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -27,6 +28,24 @@ public class SupplierService {
         Supplier supplier = supplierMapper.toEntity(dto);
         Supplier saved = supplierRepository.save(supplier);
         return supplierMapper.toDTO(saved);
+    }
+
+    public SupplierDTO update(Long id, SupplierDTO dto){
+        Optional<Supplier> existingSupplier= supplierRepository.findById(id);
+
+        if(existingSupplier.isPresent()){
+            Supplier supplier= existingSupplier.get();
+            supplier.setName(dto.getName());
+            supplier.setContact(dto.getContact());
+            supplier.setRating(dto.getRating());
+            supplier.setLeadTime(dto.getLeadTime());
+
+            Supplier updated= supplierRepository.save(supplier);
+
+            return supplierMapper.toDTO(updated);
+        }else{
+          throw new RuntimeException("supplier non trouve");
+        }
     }
 
     public boolean delete(Long id){

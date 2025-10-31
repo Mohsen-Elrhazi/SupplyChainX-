@@ -40,14 +40,36 @@ public class SupplierController {
 //        }
 //    }
     @GetMapping
-    public List<SupplierDTO> getAll(){
-        return supplierService.getAll();
-    }
+    public ResponseEntity<ApiResponse<List<SupplierDTO>>> getAllSuppliers(){
+//        return supplierService.getAll();
+                List<SupplierDTO> suppliersDTO= supplierService.getAll();
+                if(suppliersDTO.isEmpty()){
+                    return ResponseEntity.ok(
+                            ApiResponse.<List<SupplierDTO>>builder()
+                                    .status("success")
+                                    .message("Aucun suppliers trouvé")
+                                    .data(null)
+                                    .build()
+                    );
+                }
 
+                return ResponseEntity.ok(
+                        ApiResponse.<List<SupplierDTO>>builder()
+                                .status("success")
+                                .message("liste des suppliers")
+                                .data(suppliersDTO)
+                                .build()
+                );
+    }
 
     @PostMapping
     public SupplierDTO createSupplier(@Valid @RequestBody SupplierDTO supplierDTO) {
         return supplierService.create(supplierDTO);
+    }
+
+    @PutMapping("/{id}")
+    public SupplierDTO updateSupplier(@PathVariable long id,@Valid @RequestBody SupplierDTO supplierDTO){
+        return supplierService.update(id,supplierDTO);
     }
 
     @DeleteMapping("/{id}")
