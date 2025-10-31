@@ -14,18 +14,19 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class SupplierService {
     private final ISupplierRepository supplierRepository;
+    private final SupplierMapper supplierMapper;
 
     public List<SupplierDTO> getAll() {
         return supplierRepository.findAll()
                 .stream()
-                .map(SupplierMapper::toDTO)
+                .map(supplierMapper::toDTO)
                 .collect(Collectors.toList());
     }
 
     public SupplierDTO create(SupplierDTO dto) {
-        Supplier supplier = SupplierMapper.toEntity(dto);
+        Supplier supplier = supplierMapper.toEntity(dto);
         Supplier saved = supplierRepository.save(supplier);
-        return SupplierMapper.toDTO(saved);
+        return supplierMapper.toDTO(saved);
     }
 
     public boolean delete(Long id){
