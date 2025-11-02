@@ -117,8 +117,8 @@ public class SupplierController {
 
     }
 
-    @GetMapping("/{name}")
-    public ResponseEntity<ApiResponse<List<SupplierDTO>>> searchSupplierByName(@PathVariable String name){
+    @GetMapping("/search")
+    public ResponseEntity<ApiResponse<List<SupplierDTO>>> searchSupplierByName(@RequestParam String name){
         List<SupplierDTO> suppliersDTO= supplierService.searchByName(name);
         if(suppliersDTO.isEmpty()){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(

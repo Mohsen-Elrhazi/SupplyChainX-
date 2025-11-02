@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @Builder
 public class SupplierDTO {
 
-//    private Long idSupplier;
+    private Long idSupplier;
 
     @NotBlank(message = "Le nom est obligatoire")
     private String name;

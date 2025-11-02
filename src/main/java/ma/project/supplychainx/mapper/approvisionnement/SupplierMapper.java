@@ -7,7 +7,6 @@ import org.mapstruct.Mapping;
 
 @Mapper(componentModel = "spring")
 public interface SupplierMapper {
-//    SupplierMapper INSTANCE = Mappers.getMapper(SupplierMapper.class);
 
 //    @Mapping(source="idSupplier", target="idSupplier")
     SupplierDTO toDTO(Supplier supplier);
