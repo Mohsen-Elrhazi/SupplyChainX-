@@ -1,6 +1,7 @@
 package ma.project.supplychainx.controller.approvisionnement;
 
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import ma.project.supplychainx.dto.ApiResponse;
@@ -14,34 +15,16 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@Tag(name="Suppliers",description="API pour gerer les fournisseurs")
 @RestController
 @RequestMapping("/api/suppliers")
 @RequiredArgsConstructor
 public class SupplierController {
     private final SupplierService supplierService;
 
-//    @GetMapping
-//    public ResponseEntity<ApiResponse<List<SupplierDTO>>> getAllSuppliers() {
-//        try {
-//            List<SupplierDTO> suppliers = supplierService.getAll();
-//            ApiResponse<List<SupplierDTO>> response = ApiResponse.<List<SupplierDTO>>builder()
-//                    .status("success")
-//                    .message("Liste des fournisseurs récupérée avec succès")
-//                    .data(suppliers)
-//                    .build();
-//            return ResponseEntity.ok(response);
-//        } catch (Exception e) {
-//            ApiResponse<List<SupplierDTO>> response = ApiResponse.<List<SupplierDTO>>builder()
-//                    .status("error")
-//                    .message("Impossible de récupérer la liste : " + e.getMessage())
-//                    .data(null)
-//                    .build();
-//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
-//        }
-//    }
+
     @GetMapping
     public ResponseEntity<ApiResponse<List<SupplierDTO>>> getAllSuppliers(){
-//        return supplierService.getAll();
                 List<SupplierDTO> suppliersDTO= supplierService.getAll();
                 if(suppliersDTO.isEmpty()){
                     return ResponseEntity.ok(
@@ -62,23 +45,98 @@ public class SupplierController {
                 );
     }
 
+
     @PostMapping
-    public SupplierDTO createSupplier(@Valid @RequestBody SupplierDTO supplierDTO) {
-        return supplierService.create(supplierDTO);
+    public ResponseEntity<ApiResponse<SupplierDTO>> createSupplier(@Valid @RequestBody SupplierDTO supplierDTO) {
+          SupplierDTO createdDTO= supplierService.create(supplierDTO);
+
+          return ResponseEntity.status(HttpStatus.CREATED).body(
+                  ApiResponse.<SupplierDTO>builder()
+                          .status("success")
+                          .message("Supplier a ete crée")
+                          .data(createdDTO)
+                          .build()
+          );
     }
 
     @PutMapping("/{id}")
-    public SupplierDTO updateSupplier(@PathVariable long id,@Valid @RequestBody SupplierDTO supplierDTO){
-        return supplierService.update(id,supplierDTO);
+    public ResponseEntity<ApiResponse<SupplierDTO>> updateSupplier(@PathVariable long id,@Valid @RequestBody SupplierDTO supplierDTO){
+         SupplierDTO updatedDTO= supplierService.update(id,supplierDTO);
+
+         return ResponseEntity.status(HttpStatus.OK).body(
+                 ApiResponse.<SupplierDTO>builder()
+                         .status("success")
+                         .message("supplier a ete modifier ")
+                         .data(updatedDTO)
+                         .build()
+         );
     }
 
     @DeleteMapping("/{id}")
-    public String deleteSupplier(@PathVariable Long id){
+    public ResponseEntity<ApiResponse<Void>> deleteSupplier(@PathVariable Long id){
        boolean result=  supplierService.delete(id);
        if(result){
-        return "supplier deleted succefly";
+        return ResponseEntity.status(HttpStatus.OK).body(
+                ApiResponse.<Void>builder()
+                        .status("success")
+                        .message("supplier a ete supprimer")
+                        .data(null)
+                        .build()
+        );
        }else{
-           return "supplier n'existe pas";
+           return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+                   ApiResponse.<Void>builder()
+                           .status("success")
+                           .message("supplier introuvable")
+                           .data(null)
+                           .build()
+           );
        }
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<ApiResponse<SupplierDTO>> getSupplierById(@PathVariable Long id){
+        SupplierDTO supplierDTO= supplierService.getById(id);
+        if(supplierDTO==null){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+                    ApiResponse.<SupplierDTO>builder()
+                    .status("error")
+                    .message("supplier introuvable")
+                    .data(null)
+                    .build()
+            );
+        }else{
+            return ResponseEntity.ok(
+                    ApiResponse.<SupplierDTO>builder()
+                            .status("success")
+                            .message("supplier trouve avec success")
+                            .data(supplierDTO)
+                            .build()
+            );
+        }
+
+    }
+
+    @GetMapping("/{name}")
+    public ResponseEntity<ApiResponse<List<SupplierDTO>>> searchSupplierByName(@PathVariable String name){
+        List<SupplierDTO> suppliersDTO= supplierService.searchByName(name);
+        if(suppliersDTO.isEmpty()){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+                ApiResponse.<List<SupplierDTO>>builder()
+                        .status("success")
+                        .message("aucun supplier trouve par ce nom")
+                        .data(null)
+                .build()
+            );
+        }else{
+            return ResponseEntity.status(HttpStatus.OK).body(
+                    ApiResponse.<List<SupplierDTO>>builder()
+                            .status("success")
+                            .message("liste des suppliers ")
+                            .data(suppliersDTO)
+                            .build()
+            );
+        }
+
     }
 }

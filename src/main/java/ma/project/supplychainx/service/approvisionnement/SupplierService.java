@@ -21,7 +21,7 @@ public class SupplierService {
         return supplierRepository.findAll()
                 .stream()
                 .map(supplierMapper::toDTO)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     public SupplierDTO create(SupplierDTO dto) {
@@ -52,7 +52,21 @@ public class SupplierService {
         if(supplierRepository.existsById(id)){
            supplierRepository.deleteById(id);
            return true;
+        }else{
+            return false;
         }
-        return false;
+    }
+
+    public SupplierDTO getById(Long id){
+        return supplierRepository.findById(id)
+                .map(supplierMapper::toDTO)
+                .orElse(null);
+    }
+
+    public List<SupplierDTO> searchByName(String name){
+        return supplierRepository.findByNameContainingIgnoreCase(name)
+                .stream()
+                .map(supplierMapper::toDTO)
+                .toList();
     }
 }
