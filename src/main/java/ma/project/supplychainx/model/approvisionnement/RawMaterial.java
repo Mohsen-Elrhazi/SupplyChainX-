@@ -20,20 +20,20 @@ public class RawMaterial {
 
     private String name;
 
-    private int stock;
+    private Integer stock;
 
-    private int stockMin;
+    private Integer stockMin;
 
     private String unit;
 
     @ManyToMany
     @JoinTable(
-            name = "material_supplier",
+            name = "raw_material_supplier",
             joinColumns = @JoinColumn(name = "material_id"),
             inverseJoinColumns = @JoinColumn(name = "supplier_id")
     )
     private List<Supplier> suppliers;
 
-    @ManyToMany(mappedBy = "materials")
-    private List<SupplyOrder> supplyOrders;
+//    @ManyToMany(mappedBy = "materials")
+//    private List<SupplyOrder> supplyOrders;
 }

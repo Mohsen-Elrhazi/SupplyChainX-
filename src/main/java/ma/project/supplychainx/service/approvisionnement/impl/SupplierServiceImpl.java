@@ -1,22 +1,30 @@
-package ma.project.supplychainx.service.approvisionnement;
+package ma.project.supplychainx.service.approvisionnement.impl;
 
 import lombok.RequiredArgsConstructor;
 import ma.project.supplychainx.dto.approvisionnement.SupplierDTO;
 import ma.project.supplychainx.mapper.approvisionnement.SupplierMapper;
 import ma.project.supplychainx.model.approvisionnement.Supplier;
 import ma.project.supplychainx.repository.approvisionnement.ISupplierRepository;
+import ma.project.supplychainx.service.approvisionnement.interfaces.ISupplierService;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-public class SupplierService {
+public class SupplierServiceImpl implements ISupplierService {
     private final ISupplierRepository supplierRepository;
     private final SupplierMapper supplierMapper;
 
+    @Override
+    public SupplierDTO create(SupplierDTO dto) {
+        Supplier supplier = supplierMapper.toEntity(dto);
+        Supplier saved = supplierRepository.save(supplier);
+        return supplierMapper.toDTO(saved);
+    }
+
+    @Override
     public List<SupplierDTO> getAll() {
         return supplierRepository.findAll()
                 .stream()
@@ -24,13 +32,18 @@ public class SupplierService {
                 .toList();
     }
 
-    public SupplierDTO create(SupplierDTO dto) {
-        Supplier supplier = supplierMapper.toEntity(dto);
-        Supplier saved = supplierRepository.save(supplier);
-        return supplierMapper.toDTO(saved);
+    @Override
+    public boolean delete(Long id) {
+        if(supplierRepository.existsById(id)){
+            supplierRepository.deleteById(id);
+            return true;
+        }else{
+            return false;
+        }
     }
 
-    public SupplierDTO update(Long id, SupplierDTO dto){
+    @Override
+    public SupplierDTO update(Long id, SupplierDTO dto) {
         Optional<Supplier> existingSupplier= supplierRepository.findById(id);
 
         if(existingSupplier.isPresent()){
@@ -44,26 +57,19 @@ public class SupplierService {
 
             return supplierMapper.toDTO(updated);
         }else{
-          throw new RuntimeException("supplier non trouve");
+            throw new RuntimeException("supplier non trouve");
         }
     }
 
-    public boolean delete(Long id){
-        if(supplierRepository.existsById(id)){
-           supplierRepository.deleteById(id);
-           return true;
-        }else{
-            return false;
-        }
-    }
-
-    public SupplierDTO getById(Long id){
+    @Override
+    public SupplierDTO getById(Long id) {
         return supplierRepository.findById(id)
                 .map(supplierMapper::toDTO)
                 .orElse(null);
     }
 
-    public List<SupplierDTO> searchByName(String name){
+    @Override
+    public List<SupplierDTO> searchByName(String name) {
         return supplierRepository.findByNameContainingIgnoreCase(name)
                 .stream()
                 .map(supplierMapper::toDTO)

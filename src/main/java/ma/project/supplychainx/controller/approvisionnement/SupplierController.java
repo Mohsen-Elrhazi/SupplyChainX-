@@ -6,11 +6,10 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import ma.project.supplychainx.dto.ApiResponse;
 import ma.project.supplychainx.dto.approvisionnement.SupplierDTO;
-import ma.project.supplychainx.model.approvisionnement.Supplier;
-import ma.project.supplychainx.service.approvisionnement.SupplierService;
+import ma.project.supplychainx.service.approvisionnement.impl.SupplierServiceImpl;
+import ma.project.supplychainx.service.approvisionnement.interfaces.ISupplierService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,7 +19,7 @@ import java.util.List;
 @RequestMapping("/api/suppliers")
 @RequiredArgsConstructor
 public class SupplierController {
-    private final SupplierService supplierService;
+    private final ISupplierService supplierService;
 
 
     @GetMapping
@@ -86,7 +85,7 @@ public class SupplierController {
        }else{
            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
                    ApiResponse.<Void>builder()
-                           .status("success")
+                           .status("error")
                            .message("supplier introuvable")
                            .data(null)
                            .build()
