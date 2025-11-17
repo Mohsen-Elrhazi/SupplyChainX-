@@ -6,8 +6,10 @@ import ma.project.supplychainx.mapper.approvisionnement.SupplierMapper;
 import ma.project.supplychainx.model.approvisionnement.Supplier;
 import ma.project.supplychainx.repository.approvisionnement.ISupplierRepository;
 import ma.project.supplychainx.service.approvisionnement.interfaces.ISupplierService;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
+import org.springframework.data.domain.Pageable;
 import java.util.List;
 import java.util.Optional;
 
@@ -25,11 +27,9 @@ public class SupplierServiceImpl implements ISupplierService {
     }
 
     @Override
-    public List<SupplierDTO> getAll() {
-        return supplierRepository.findAll()
-                .stream()
-                .map(supplierMapper::toDTO)
-                .toList();
+    public Page<SupplierDTO> getAll(Pageable pageable) {
+        return supplierRepository.findAll(pageable)
+                .map(supplierMapper::toDTO);
     }
 
     @Override

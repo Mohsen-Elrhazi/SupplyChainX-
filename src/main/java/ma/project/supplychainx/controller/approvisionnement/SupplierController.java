@@ -8,10 +8,13 @@ import ma.project.supplychainx.dto.ApiResponse;
 import ma.project.supplychainx.dto.approvisionnement.SupplierDTO;
 import ma.project.supplychainx.service.approvisionnement.impl.SupplierServiceImpl;
 import ma.project.supplychainx.service.approvisionnement.interfaces.ISupplierService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import org.springframework.data.domain.Pageable;
 import java.util.List;
 
 @Tag(name="Suppliers",description="API pour gerer les fournisseurs")
@@ -23,25 +26,20 @@ public class SupplierController {
 
 
     @GetMapping
-    public ResponseEntity<ApiResponse<List<SupplierDTO>>> getAllSuppliers(){
-                List<SupplierDTO> suppliersDTO= supplierService.getAll();
-                if(suppliersDTO.isEmpty()){
-                    return ResponseEntity.ok(
-                            ApiResponse.<List<SupplierDTO>>builder()
-                                    .status("success")
-                                    .message("Aucun suppliers trouvé")
-                                    .data(null)
-                                    .build()
-                    );
-                }
+    public ResponseEntity<ApiResponse<Page<SupplierDTO>>> getAllSuppliers(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ){
+        Pageable pageable = PageRequest.of(page, size);
+        Page<SupplierDTO> result = supplierService.getAll(pageable);
 
-                return ResponseEntity.ok(
-                        ApiResponse.<List<SupplierDTO>>builder()
-                                .status("success")
-                                .message("liste des suppliers")
-                                .data(suppliersDTO)
-                                .build()
-                );
+        return ResponseEntity.ok(
+                ApiResponse.<Page<SupplierDTO>>builder()
+                        .status("success")
+                        .message("Liste paginée des fournisseurs")
+                        .data(result)
+                        .build()
+        );
     }
 
 
@@ -77,8 +75,7 @@ public class SupplierController {
        if(result){
         return ResponseEntity.status(HttpStatus.OK).body(
                 ApiResponse.<Void>builder()
-                        .status("success")
-                        .message("supplier a ete supprimer")
+                                                .message("supplier a ete supprimé")       .message("supplier a ete supprimer")
                         .data(null)
                         .build()
         );
@@ -108,7 +105,7 @@ public class SupplierController {
             return ResponseEntity.ok(
                     ApiResponse.<SupplierDTO>builder()
                             .status("success")
-                            .message("supplier trouve avec success")
+                                                        .message("supplier trouvé avec succès")
                             .data(supplierDTO)
                             .build()
             );

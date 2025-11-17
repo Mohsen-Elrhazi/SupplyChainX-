@@ -6,6 +6,8 @@ import ma.project.supplychainx.mapper.approvisionnement.RawMaterialMapper;
 import ma.project.supplychainx.model.approvisionnement.RawMaterial;
 import ma.project.supplychainx.repository.approvisionnement.IRawMaterialRepository;
 import ma.project.supplychainx.service.approvisionnement.interfaces.IRawMaterialService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -23,11 +25,9 @@ public class RawMaterialSerivceImpl implements IRawMaterialService {
         return rawMaterialMapper.toDTO(saved);    }
 
     @Override
-    public List<RawMaterialDTO> getAll() {
-        return rawMaterialRepository.findAll()
-                .stream()
-                .map(rawMaterialMapper::toDTO)
-                .toList();
+    public Page<RawMaterialDTO> getAll(Pageable pageable) {
+        return rawMaterialRepository.findAll(pageable)
+                .map(rawMaterialMapper::toDTO);
     }
 
     @Override
@@ -59,8 +59,11 @@ public class RawMaterialSerivceImpl implements IRawMaterialService {
     }
 
     @Override
-    public Optional<RawMaterialDTO> getById(Long id) {
-       return rawMaterialRepository.findById(id)
-               .map(rawMaterialMapper::toDTO);
+    public List<RawMaterialDTO> getLowStockMaterials() {
+        return rawMaterialRepository.findByStockLessThanStockMin()
+                .stream()
+                .map(rawMaterialMapper::toDTO)
+                .toList();
     }
+
 }

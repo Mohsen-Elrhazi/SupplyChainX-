@@ -35,5 +35,5 @@ public class SupplyOrder {
             joinColumns = @JoinColumn(name = "order_id"),
             inverseJoinColumns = @JoinColumn(name = "material_id")
     )
-    private List<RawMaterial> materials;
+    private List<RawMaterial> orderedRawMaterials;
 }

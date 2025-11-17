@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -29,6 +30,13 @@ public class Supplier {
     @OneToMany(mappedBy = "supplier", cascade = CascadeType.ALL)
     private List<SupplyOrder> orders;
 
-    @ManyToMany(mappedBy = "suppliers")
+
+    @ManyToMany
+    @JoinTable(
+            name = "raw_material_supplier",
+            joinColumns = @JoinColumn(name = "supplier_id"),
+            inverseJoinColumns = @JoinColumn(name = "rawMaterial_id")
+    )
     private List<RawMaterial> rawMaterials;
+
 }

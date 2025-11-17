@@ -26,14 +26,12 @@ public class RawMaterial {
 
     private String unit;
 
-    @ManyToMany
-    @JoinTable(
-            name = "raw_material_supplier",
-            joinColumns = @JoinColumn(name = "material_id"),
-            inverseJoinColumns = @JoinColumn(name = "supplier_id")
-    )
+
+    @ManyToMany(mappedBy = "rawMaterials")
     private List<Supplier> suppliers;
 
-//    @ManyToMany(mappedBy = "materials")
-//    private List<SupplyOrder> supplyOrders;
+    @ManyToMany(mappedBy = "orderedRawMaterials")
+    private List<SupplyOrder> supplyOrders;
+
+
 }

@@ -1,18 +1,34 @@
 version: '3.8'
 
 services:
+
+  # ---- Backend Spring Boot ----
+  backend:
+    build: .
+    container_name: supplychainx-backend
+    ports:
+      - "9090:9090"     # accès via http://localhost:8080
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://localhost:3306/supplychainx_db?useSSL=false&serverTimezone=UTC
+      SPRING_DATASOURCE_USERNAME: mohsen
+      SPRING_DATASOURCE_PASSWORD: mohsen123
+    depends_on:
+      - mysql
+    networks:
+      - supplychainx-network
+
   # ---- MySQL Database ----
   mysql:
     image: mysql:8.0
     container_name: mysql_supplychainx
     restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: root       # mot de passe root
-      MYSQL_DATABASE: supplychainx_db   # crée uniquement la base de données
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: supplychainx_db
       MYSQL_USER: mohsen
       MYSQL_PASSWORD: mohsen123
     ports:
-      - "3306:3306"                   # port local 3307 → conteneur 3306
+      - "3306:3306"
     volumes:
       - mysql_data_supplychainx:/var/lib/mysql
     networks:
@@ -28,7 +44,7 @@ services:
       PMA_USER: mohsen
       PMA_PASSWORD: mohsen123
     ports:
-      - "8081:80"                      # accès via http://localhost:8081
+      - "8081:80"
     depends_on:
       - mysql
     networks:

@@ -6,6 +6,9 @@ import lombok.RequiredArgsConstructor;
 import ma.project.supplychainx.dto.ApiResponse;
 import ma.project.supplychainx.dto.approvisionnement.RawMaterialDTO;
 import ma.project.supplychainx.service.approvisionnement.interfaces.IRawMaterialService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,25 +25,19 @@ public class RawMaterialController {
 
 
     @GetMapping
-    public ResponseEntity<ApiResponse<List<RawMaterialDTO>>> getAllSuppliers(){
-        List<RawMaterialDTO> rawMaterialDTOS= rawMaterialService.getAll();
-        if(rawMaterialDTOS.isEmpty()){
+    public ResponseEntity<ApiResponse<Page<RawMaterialDTO>>> getAllSuppliers(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ){
+        Pageable pageable = PageRequest.of(page, size);
+        Page<RawMaterialDTO> result= rawMaterialService.getAll(pageable);
             return ResponseEntity.ok(
-                    ApiResponse.<List<RawMaterialDTO>>builder()
+                    ApiResponse.<Page<RawMaterialDTO>>builder()
                             .status("success")
-                            .message("Aucun raw material trouvé")
-                            .data(null)
+                            .message("Liste paginée des Rawmateril")
+                            .data(result)
                             .build()
             );
-        }
-
-        return ResponseEntity.ok(
-                ApiResponse.<List<RawMaterialDTO>>builder()
-                        .status("success")
-                        .message("liste des raw materials")
-                        .data(rawMaterialDTOS)
-                        .build()
-        );
     }
 
 
@@ -94,4 +91,28 @@ public class RawMaterialController {
         }
         return null;
     }
+
+    @GetMapping("/low-stock")
+    public ResponseEntity<ApiResponse<List<RawMaterialDTO>>> getLowStockMaterials() {
+        List<RawMaterialDTO> dtos = rawMaterialService.getLowStockMaterials();
+
+        if(dtos.isEmpty()){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+                    ApiResponse.<List<RawMaterialDTO>>builder()
+                            .status("error")
+                            .message("Aucune matière première en dessous du seuil critique")
+                            .data(null)
+                            .build()
+            );
+        }
+
+        return ResponseEntity.ok(
+                ApiResponse.<List<RawMaterialDTO>>builder()
+                        .status("success")
+                        .message("Liste des matières dont le stock est inférieur au seuil critique")
+                        .data(dtos)
+                        .build()
+        );
+    }
+
 }
